@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>C.A.M.P 테스트</title>
+  <script defer>
+    const questions = [
+      { q: "이번 주말에는 캠핑을 가려고 합니다. 캠핑할 장소를 찾아야 하는데....", answers: [
+        { text: "주변에서 추천받은 곳으로!", y: 5 },
+        { text: "지난번에 가 봤던 곳으로!", y: 9 },
+        { text: "인터넷에서 찾은 곳으로!", y: 6 },
+        { text: "위성지도 켜고, 일단 출발.", y: 0 }
+      ]},
+      { q: "이번 캠핑을 결심한 이유는 이것이었죠!", answers: [
+        { text: "편안한 휴식이 필요해....", x: 5, y: 8 },
+        { text: "짜릿한 모험이 필요해!", x: 3, y: 0 },
+        { text: "새 장비를 써보고 싶어.", x: 8, y: 6 },
+        { text: "친구/가족들과 시간을 보내기로 했어.", x: 8, y: 7 }
+      ]},
+      { q: "함께하면 더 즐겁죠! 당신과 함께할 사람은....", answers: [
+        { text: "가족들!", x: 8, y: 7 },
+        { text: "친구들!", x: 6, y: 4 },
+        { text: "....회사 동료들.", x: 7, y: 3 },
+        { text: "음. 그냥 혼자 갈래요.", x: 2, y: 5 }
+      ]},
+      { q: "캠핑 장소에 꼭 있었으면 하는 시설은 무엇인가요?", answers: [
+        { text: "멋진 경치!", y: 0 },
+        { text: "깨끗한 물이 나오는 수도", y: 4 },
+        { text: "전기", y: 8 },
+        { text: "화장실", y: 6 },
+        { text: "2~4번 모두", y: 10 }
+      ]},
+      { q: "목적지가 정해졌으니, 이동 수단을 선택해야 합니다. 아무 것이든 선택할 수 있다면 무엇을 타시겠어요?", answers: [
+        { text: "SUV 또는 트럭", x: 8, y: 8 },
+        { text: "승용차", x: 6, y: 6 },
+        { text: "오토바이", x: 4, y: 4 },
+        { text: "자전거", x: 2, y: 2 },
+        { text: "타다니? 걸어 갈 건데요?", x: 0, y: 0 }
+      ]},
+      { q: "이제 장비를 점검해야죠. 당신이 챙긴 장비 중 접었을 때의 크기가 가장 큰 것은....", answers: [
+        { text: "텐트.", x: 4 },
+        { text: "트레일러.", x: 10 },
+        { text: "발전기.", x: 8 },
+        { text: "침낭?!", x: 0 },
+        { text: "파워뱅크.", x: 6 }
+      ]},
+      { q: "야영지에서 먹을 음식을 준비합니다. 마트에서 사 온 물건들을 옮겨담은 곳은.....", answers: [
+        { text: "보냉백", x: 4 },
+        { text: "냉장고", x: 10 },
+        { text: ".....배낭.", x: 0 },
+        { text: "아이스박스", x: 7 }
+      ]},
+      { q: "조용하고 멋진 야영지에 도착했습니다! 가장 먼저 할 일은....", answers: [
+        { text: "텐트 설치.", y: 4 },
+        { text: "타프 설치.", y: 6 },
+        { text: "야영지 정찰.", y: 0 },
+        { text: "짐 내리기.", y: 8 },
+        { text: "일단 한 숨 자고 시작할까?!", y: 10 }
+      ]},
+      { q: "오늘은 쌀쌀한 날입니다. 텐트를 따뜻하게 해 줄 도구로 당신이 가져온 것은....", answers: [
+        { text: "등유 난로", x: 5, y: 8 },
+        { text: "전기 담요", x: 3, y: 10 },
+        { text: "화목 난로", x: 5, y: 5 },
+        { text: "무시동 히터", x: 7, y: 5 },
+        { text: "두꺼운 침낭", x: 0, y: 0 }
+      ]},
+      { q: "캠프 설치가 끝났습니다! 이제부터 본격적으로 캠핑을 즐길 시간입니다. 가장 먼저 할 것은...", answers: [
+        { text: "맛있는 음식 요리하기!", x: 5, y: 5 },
+        { text: "낚시하기!", x: 5, y: 2 },
+        { text: "불멍부터!", x: 5, y: 5 },
+        { text: "나무 베기!", x: 2, y: 0 },
+        { text: "조명 설치!", x: 8, y: 7 }
+      ]},
+    ];
+
+    let current = 0;
+    let totalX = 0;
+    let totalY = 0;
+
+    function renderQuestion() {
+      const q = questions[current];
+      const container = document.getElementById('quiz');
+      container.innerHTML = `<h2>${q.q}</h2>` +
+        q.answers.map((a, i) => `<button onclick="select(${i})">${a.text}</button>`).join("<br><br>");
+    }
+
+    function select(i) {
+      const a = questions[current].answers[i];
+      totalX += a.x ?? 0;
+      totalY += a.y ?? 0;
+      current++;
+      if (current < questions.length) {
+        renderQuestion();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+      const normalizedX = ((totalX - 9) / (64 - 9)) * 10;
+      const normalizedY = ((totalY - 3) / (74 - 3)) * 10;
+      const container = document.getElementById('quiz');
+      container.innerHTML = `
+        <h2>당신의 캠핑 성향 좌표는 (X: ${Math.round(normalizedX)}, Y: ${Math.round(normalizedY)}) 입니다!</h2>
+        <canvas id="resultCanvas" width="300" height="300" style="border:1px solid #ccc; margin-top: 1em;"></canvas>
+        <p style="margin-top: 1em;">아래 그래프는 당신의 캠핑 성향을 시각화한 것입니다.</p>
+        <button onclick="location.reload()" style="margin-top: 2em; font-size: 1rem; padding: 0.5em 1em;">다시하기</button>
+      `;
+
+      const canvas = document.getElementById('resultCanvas');
+      const ctx = canvas.getContext('2d');
+
+      // Draw axes
+      ctx.beginPath();
+      ctx.moveTo(30, 0);
+      ctx.lineTo(30, 270);
+      ctx.moveTo(30, 270);
+      ctx.lineTo(300, 270);
+      ctx.strokeStyle = '#333';
+      ctx.stroke();
+
+      // Axis labels
+      ctx.font = '12px sans-serif';
+      ctx.fillText('모험추구형(Adventurous)', 35, 270);
+      ctx.fillText('휴식추구형(Comfort-seeking)', 240, 290);
+      ctx.fillText('미니멀리스트(Minimal)', 35, 290);
+      ctx.fillText('맥시멀리스트(Prepared)', 35, 15);
+
+      // Plot point
+      const x = 30 + normalizedX * 25;
+      const y = 270 - normalizedY * 25;
+      ctx.beginPath();
+      ctx.arc(x, y, 6, 0, Math.PI * 2);
+      ctx.fillStyle = 'red';
+      ctx.fill();
+    }
+
+    window.onload = renderQuestion;
+  </script>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 2em; }
+    button { font-size: 1rem; padding: 0.5em 1em; margin: 0.2em; }
+  </style>
+</head>
+<body>
+  <h1>C.A.M.P 테스트</h1>
+  <div id="quiz"></div>
+</body>
+</html>
